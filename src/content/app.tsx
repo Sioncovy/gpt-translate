@@ -10,6 +10,7 @@ const App = () => {
     left: number;
   } | null>(null);
 
+  const [apiKey, setApiKey] = useState('');
   const [selectedText, setSelectedText] = useState<string>('');
   const [transText, setTransText] = useState<string | null>(null);
   const transTextRef = useLatest(transText);
@@ -30,30 +31,40 @@ const App = () => {
     setPosition(null);
   };
 
+  chrome.storage.local.get('apiKey', (result) => {
+    setApiKey(result.apiKey);
+  });
+
+  const handleMouseUp = (e: MouseEvent) => {
+    if (boxRef.current?.contains(e.target as Node)) {
+      return;
+    }
+
+    const selection = window.getSelection();
+    if (selection === null) {
+      return;
+    }
+    const text = selection.toString().trim();
+
+    if (text.length > 0) {
+      const range = selection.getRangeAt(0).getBoundingClientRect();
+      setPosition({
+        top: range.top + window.scrollY - 28, // Adjust position as needed
+        left: range.left + window.scrollX,
+      });
+      setSelectedText(text);
+    } else {
+      setPosition(null);
+      setTransText(null);
+    }
+  };
+
   useEffect(() => {
-    document.addEventListener('mouseup', (e) => {
-      if (boxRef.current?.contains(e.target as Node)) {
-        return;
-      }
+    document.addEventListener('mouseup', handleMouseUp);
 
-      const selection = window.getSelection();
-      if (selection === null) {
-        return;
-      }
-      const text = selection.toString().trim();
-
-      if (text.length > 0) {
-        const range = selection.getRangeAt(0).getBoundingClientRect();
-        setPosition({
-          top: range.top + window.scrollY - 28, // Adjust position as needed
-          left: range.left + window.scrollX,
-        });
-        setSelectedText(text);
-      } else {
-        setPosition(null);
-        setTransText(null);
-      }
-    });
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
   }, []);
 
   return (
@@ -65,6 +76,7 @@ const App = () => {
             onStream={onStream}
             transText={transText}
             closeTrans={closeTrans}
+            apiKey={apiKey}
           />
         ) : (
           <Menu text={selectedText} startTrans={startTrans} />

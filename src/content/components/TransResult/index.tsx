@@ -9,16 +9,26 @@ interface Props {
   onStream: (text: string) => void;
   transText: string;
   closeTrans: () => void;
+  apiKey: string;
 }
 
-const TransResult: FC<Props> = ({ text, onStream, transText, closeTrans }) => {
+const TransResult: FC<Props> = ({
+  text,
+  onStream,
+  transText,
+  closeTrans,
+  apiKey,
+}) => {
   const openai = new OpenAI({
-    apiKey: import.meta.env.VITE_API_KEY,
+    apiKey: apiKey || '',
     dangerouslyAllowBrowser: true,
   });
 
   useAsyncEffect(async () => {
     console.log('开始翻译', text);
+    if (!openai) {
+      return;
+    }
 
     const stream = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -41,10 +51,22 @@ const TransResult: FC<Props> = ({ text, onStream, transText, closeTrans }) => {
   return (
     <Flex vertical gap={12}>
       <Flex gap={12}>
-        <Card title="原文" size="small" style={{ maxWidth: 240 }}>
+        <Card
+          title="原文"
+          size="small"
+          styles={{
+            body: { maxWidth: 240, maxHeight: 300, overflow: 'auto' },
+          }}
+        >
           {text}
         </Card>
-        <Card title="译文" size="small" style={{ maxWidth: 400 }}>
+        <Card
+          title="译文"
+          size="small"
+          styles={{
+            body: { maxWidth: 400, maxHeight: 300, overflow: 'auto' },
+          }}
+        >
           {transText}
         </Card>
       </Flex>

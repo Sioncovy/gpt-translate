@@ -1,47 +1,36 @@
-import { useEffect } from 'react';
-
-console.log('popup loaded');
+import { Card, Flex, Input, Typography } from 'antd';
+import { useEffect, useState } from 'react';
 
 const Popup = () => {
-  const handleMouseUp = (event: MouseEvent) => {
-    console.log('✨  ~ handleMouseUp ~ event:', event);
-    const selection = window.getSelection();
-    if (selection === null) {
-      return;
-    }
-    console.log('✨  ~ handleMouseUp ~ selection:', selection);
-    const text = selection.toString().trim();
-    console.log('text', text);
-
-    if (text.length > 0) {
-      // const range = selection.getRangeAt(0).getBoundingClientRect();
-      // setButtonPosition({
-      //   top: range.top + window.scrollY - 30, // Adjust position as needed
-      //   left: range.left + window.scrollX,
-      // });
-      // setSelectedText(text);
-    } else {
-      // setButtonPosition(null)
-    }
-  };
-  console.log('加载了 popup');
+  const [apiKey, setApiKey] = useState('');
 
   useEffect(() => {
-    console.log('加载了 popup');
-
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      console.log('卸载了 popup');
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+    chrome.storage.local.get('apiKey', (result) => {
+      setApiKey(result.apiKey);
+    });
   }, []);
 
+  useEffect(() => {
+    // localStorage.setItem('apiKey', apiKey);
+    chrome.storage.local.set({ apiKey });
+  }, [apiKey]);
+
   return (
-    <div>
-      <h1>Popup2</h1>
-      <p>Popup content</p>
-      <footer>哈哈</footer>
-    </div>
+    <Card size="small" style={{ width: 400 }}>
+      <Typography.Title level={4} style={{ marginTop: 4 }}>
+        配置
+      </Typography.Title>
+      <Flex vertical gap={4}>
+        <div>API Key</div>
+        <Input
+          value={apiKey}
+          onChange={(e) => {
+            setApiKey(e.target.value);
+          }}
+          placeholder="请输入 API Key"
+        />
+      </Flex>
+    </Card>
   );
 };
 
