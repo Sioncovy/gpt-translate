@@ -1,6 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import styles from './app.module.less';
+import Menu from './components/Menu';
 
 const App = () => {
+  const [position, setPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+  const [selectedText, setSelectedText] = useState<string>('');
+
   useEffect(() => {
     document.addEventListener('mouseup', () => {
       const selection = window.getSelection();
@@ -11,18 +19,24 @@ const App = () => {
 
       if (text.length > 0) {
         const range = selection.getRangeAt(0).getBoundingClientRect();
-        console.log('✨  ~ document.addEventListener ~ range:', range);
-        // setButtonPosition({
-        //   top: range.top + window.scrollY - 30, // Adjust position as needed
-        //   left: range.left + window.scrollX,
-        // });
-        // setSelectedText(text);
+        setPosition({
+          top: range.top + window.scrollY - 30, // Adjust position as needed
+          left: range.left + window.scrollX,
+        });
+        setSelectedText(text);
       } else {
-        // setButtonPosition(null)
+        setPosition(null);
       }
     });
   }, []);
-  return <div>App</div>;
+
+  return (
+    position && (
+      <div className={styles.app} style={{ ...position }}>
+        <Menu text={selectedText} />
+      </div>
+    )
+  );
 };
 
 export default App;

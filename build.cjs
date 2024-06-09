@@ -18,7 +18,7 @@ const manifest = {
       // 应用于哪些页面地址（可以使用正则，<all_urls>表示匹配所有地址）
       matches: ["<all_urls>"],
       // // 注入到目标页面的css，注意不要污染目标页面的样式
-      // "css": ["static/css/content.css"],
+      css: ["assets/content.css"],
       // // 注入到目标页面js，这个js是在沙盒里运行，与目标页面是隔离的，没有污染问题。
       js: ["content.js"],
       // // 代码注入的时机，可选document_start、document_end、document_idle（默认）
@@ -33,13 +33,13 @@ const manifest = {
   //   service_worker: 'background.js'
   // },
   permissions: ['storage', 'activeTab', 'scripting'],
-  web_accessible_resources: [
-    {
-      resources: ["popup/*", "contentPage/*", "assets/*", "js/*"],
-      matches: ["<all_urls>"],
-      use_dynamic_url: true
-    }
-  ]
+  // web_accessible_resources: [
+  //   {
+  //     resources: ["popup/*", "contentPage/*", "assets/*", "js/*"],
+  //     matches: ["<all_urls>"],
+  //     use_dynamic_url: true
+  //   }
+  // ]
 }
 
 
