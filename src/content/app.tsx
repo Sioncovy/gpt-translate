@@ -45,7 +45,7 @@ const App = () => {
       if (text.length > 0) {
         const range = selection.getRangeAt(0).getBoundingClientRect();
         setPosition({
-          top: range.top - window.screenY - 12, // Adjust position as needed
+          top: range.top + window.scrollY - 28, // Adjust position as needed
           left: range.left + window.scrollX,
         });
         setSelectedText(text);
