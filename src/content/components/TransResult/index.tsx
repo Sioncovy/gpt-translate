@@ -1,15 +1,17 @@
 import { useAsyncEffect } from 'ahooks';
-import { Card } from 'antd';
+import { Button, Card, Flex } from 'antd';
 import OpenAI from 'openai';
 import { FC } from 'react';
+import { copyTextToClipboard } from '../../../utils';
 
 interface Props {
   text: string;
   onStream: (text: string) => void;
   transText: string;
+  closeTrans: () => void;
 }
 
-const TransResult: FC<Props> = ({ text, onStream, transText }) => {
+const TransResult: FC<Props> = ({ text, onStream, transText, closeTrans }) => {
   const openai = new OpenAI({
     apiKey: import.meta.env.VITE_API_KEY,
     dangerouslyAllowBrowser: true,
@@ -36,7 +38,44 @@ const TransResult: FC<Props> = ({ text, onStream, transText }) => {
     }
   }, []);
 
-  return <Card>{transText}</Card>;
+  return (
+    <Flex vertical gap={12}>
+      <Flex gap={12}>
+        <Card title="原文" size="small" style={{ maxWidth: 240 }}>
+          {text}
+        </Card>
+        <Card title="译文" size="small" style={{ maxWidth: 400 }}>
+          {transText}
+        </Card>
+      </Flex>
+      <Flex gap={8}>
+        <Button
+          size="small"
+          onClick={() => {
+            closeTrans();
+          }}
+        >
+          关闭
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {
+            copyTextToClipboard(text);
+          }}
+        >
+          复制原文
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {
+            copyTextToClipboard(transText);
+          }}
+        >
+          复制译文
+        </Button>
+      </Flex>
+    </Flex>
+  );
 };
 
 export default TransResult;
