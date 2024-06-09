@@ -6,7 +6,8 @@ import { useLatest } from 'ahooks';
 
 const App = () => {
   const [position, setPosition] = useState<{
-    top: number;
+    top?: number;
+    bottom?: number;
     left: number;
   } | null>(null);
 
@@ -48,10 +49,19 @@ const App = () => {
 
     if (text.length > 0) {
       const range = selection.getRangeAt(0).getBoundingClientRect();
-      setPosition({
-        top: range.top + window.scrollY - 28, // Adjust position as needed
-        left: range.left + window.scrollX,
-      });
+      if (range.top < 0) {
+        setPosition({
+          bottom:
+            document.documentElement.scrollHeight -
+            (range.bottom + 28 + window.scrollY),
+          left: range.left + window.scrollX,
+        });
+      } else {
+        setPosition({
+          top: range.top - 28 + window.scrollY,
+          left: range.left + window.scrollX,
+        });
+      }
       setSelectedText(text);
     } else {
       setPosition(null);
