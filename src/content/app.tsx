@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import styles from './app.module.less';
 import Menu from './components/Menu';
+import TransResult from './components/TransResult';
+import { useLatest } from 'ahooks';
 
 const App = () => {
   const [position, setPosition] = useState<{
@@ -8,6 +10,18 @@ const App = () => {
     left: number;
   } | null>(null);
   const [selectedText, setSelectedText] = useState<string>('');
+  const [transText, setTransText] = useState<string | null>(null);
+  const transTextRef = useLatest(transText);
+
+  const onStream = (content: string) => {
+    console.log('✨  ~ onStream ~ content:', content);
+    transTextRef.current = (transTextRef.current || '').concat(content || '');
+    setTransText(transTextRef.current);
+  };
+
+  const startTrans = () => {
+    setTransText('');
+  };
 
   useEffect(() => {
     document.addEventListener('mouseup', () => {
@@ -33,7 +47,15 @@ const App = () => {
   return (
     position && (
       <div className={styles.app} style={{ ...position }}>
-        <Menu text={selectedText} />
+        {transText !== null ? (
+          <TransResult
+            text={selectedText}
+            onStream={onStream}
+            transText={transText}
+          />
+        ) : (
+          <Menu text={selectedText} startTrans={startTrans} />
+        )}
       </div>
     )
   );
